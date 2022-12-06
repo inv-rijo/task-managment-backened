@@ -1,8 +1,12 @@
-const express = require("express");
 require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { User, validate, validateUser,validateChangePassword } = require("../model/User");
+const {
+  User,
+  validate,
+  validateUser,
+  validateChangePassword,
+} = require("../model/User");
 const { LoginView, UserView } = require("../views/UserView");
 const time = require("../utils/Time");
 const ROLES = require("../model/Role");
@@ -79,7 +83,7 @@ const addUsers = async (req, res) => {
         create_date: time,
         update_date: time,
       });
-      res.send("user created").status(200);
+      res.send(user.user_name + "user created").status(200);
     }
   } catch (err) {
     res.send("errror" + err).status(400);
@@ -155,8 +159,8 @@ const deleteUserById = async (req, res) => {
     res.send("error" + err).status(500);
   }
 };
-const changePasswordService=async(req,res)=>{
-  console.log(req.user.id+"service");
+const changePasswordService = async (req, res) => {
+  console.log(req.user.id + "service");
   let user = await User.findByPk(req.user.id);
   if (user == null) {
     res.status(404).send("Not Found");
@@ -166,11 +170,17 @@ const changePasswordService=async(req,res)=>{
   } else {
     const { error } = validate(req.body);
     if (error) res.send(error.details[0].message);
-    else{
-      req.body.oldPassword
+    else {
+      req.body.oldPassword;
     }
-
   }
-}
+};
 
-module.exports = { login, addUsers, addUser, getUserById, deleteUserById,changePasswordService };
+module.exports = {
+  login,
+  addUsers,
+  addUser,
+  getUserById,
+  deleteUserById,
+  changePasswordService,
+};
