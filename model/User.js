@@ -33,14 +33,6 @@ const User = sequelize.define(
     password_token: {
       type: Sequelize.STRING,
     },
-    create_date: {
-      type: Sequelize.DATE,
-      // allowNull: false,
-    },
-    update_date: {
-      type: Sequelize.DATE,
-      // allowNull: false,
-    },
     user_type: {
       type: Sequelize.ENUM,
       values:['admin','manager','client','developer'],
@@ -53,7 +45,9 @@ const User = sequelize.define(
   },
   {
     freezeTableName: true,
-    timestamps: false,
+    timestamps: true,
+    createdAt:"created_date",
+    updatedAt:"updated_date"
   }
 );
 function validateUser(user) {
@@ -78,7 +72,7 @@ function validateChangePassword(user) {
     old_password: Joi.string().min(8).max(18).pattern(regrex).required(),
     new_password: Joi.string().min(8).max(18).pattern(regrex).required(),
   });
-  return schema.validateChangePassword(user);
+  return schema.validate(user);
 }
 
 module.exports = {User,validate,validateUser,validateChangePassword};

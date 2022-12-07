@@ -30,7 +30,6 @@ const deleteUserByIdController= async(req,res)=>{
     }
 }
 const changePassword= async(req,res)=>{
-  console.log("hhhhhi");
   console.log(req.user.id);
   try {
     await changePasswordService(req,res)

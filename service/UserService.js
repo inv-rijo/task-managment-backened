@@ -15,6 +15,7 @@ const STATUS = {
   NOTACTIVE: "0",
 };
 const { NotFound } = require("../Middleware/Error");
+const { boolean } = require("joi");
 // User login
 const login = async (req, res) => {
   console.log("outer" + req.body);
@@ -168,10 +169,23 @@ const changePasswordService = async (req, res) => {
     console.log("huu");
     res.status(404).send("Not Found");
   } else {
-    const { error } = validate(req.body);
+    console.log(req.body);
+    const { error } = validateChangePassword(req.body);
     if (error) res.send(error.details[0].message);
     else {
-      req.body.oldPassword;
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(req.body.new_password, salt);
+      let oldPassword = await bcrypt.compare(
+        req.body.old_password,
+        user.password
+      );
+      console.log(!oldPassword + "asdfghjkl");
+      if (!oldPassword) {
+        res.send("password doesnt match with old password").status(400);
+      } else {
+        user.update({ password: hashedPassword });
+        res.send("password is updated").status(200);
+      }
     }
   }
 };
