@@ -17,7 +17,7 @@ const verifyToken = (req, res, next) => {
   }
   return next();
 };
-
+//adminaccess to the auth
 const adminAccess = (req, res, next) => {
   verifyToken(req, res, () => {
     if (req.user.role == "admin") {
@@ -27,9 +27,10 @@ const adminAccess = (req, res, next) => {
     }
   });
 };
+//get the current user
 const currentUser = (req, res, next) => {
   verifyToken(req, res, () => {
-    req.current_user= req.user.id;
+    req.current_user = req.user.id;
   });
 };
 

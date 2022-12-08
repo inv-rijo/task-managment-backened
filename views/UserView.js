@@ -1,3 +1,4 @@
+//view for login user which is simple constructor where value where pass though and set in objecr
 class LoginView{
     constructor(data,accessToken,refreshToken){
         this.user_id = data.user_id;
@@ -26,5 +27,13 @@ class UserView{
     }
     
 }
+class UserListView{
+    constructor(data){
+        this.userList=[]
+        for(let user of data){
+            this.userList.push(new UserListView(user))
+        }
+    }
+}
 
-module.exports = {LoginView,UserView}
+module.exports = {LoginView,UserView,UserListView}

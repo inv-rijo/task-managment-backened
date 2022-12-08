@@ -7,23 +7,18 @@ const {
   validateUser,
   validateChangePassword,
 } = require("../model/User");
-const { LoginView, UserView } = require("../views/UserView");
+const { LoginView, UserView, UserListView } = require("../views/UserView");
 const time = require("../utils/Time");
 const ROLES = require("../model/Role");
 const STATUS = {
   ACTIVE: "1",
   NOTACTIVE: "0",
 };
-const { NotFound } = require("../Middleware/Error");
-const { boolean } = require("joi");
+const { pager } = require("../Middleware/Paginated");
 // User login
 const login = async (req, res) => {
-  console.log("outer" + req.body);
   try {
-    console.log(req.body);
-    console.log("hiii");
     if (!(req.body.email && req.body.password)) {
-      console.log("!");
       res.status(400).json({ error: "fill all details", status: 400 });
     } else {
       console.log("!!");
@@ -31,7 +26,6 @@ const login = async (req, res) => {
         where: { email: req.body.email },
       });
       if (!userWithEmail) {
-        console.log("!!!");
         res.status(404).json({ error: "User not found", status: 404 });
       } else if (
         await bcrypt.compare(req.body.password, userWithEmail.password)
@@ -43,7 +37,7 @@ const login = async (req, res) => {
             purpose: "ACCESS_TOKEN",
           },
           process.env.TOKEN_KEY,
-          { expiresIn: "1d" }
+          { expiresIn: "2h" }
         );
         const refreshToken = jwt.sign(
           {
@@ -69,7 +63,6 @@ const login = async (req, res) => {
 const addUsers = async (req, res) => {
   const body = req.body;
   try {
-    console.log(body);
     const { error } = validate(body);
     if (error) res.send(error.details[0].message);
     else {
@@ -94,9 +87,7 @@ const addUsers = async (req, res) => {
 const addUser = async (req, res) => {
   const body = req.body;
   try {
-    console.log(body);
     const { error } = validateUser(body);
-    console.log(body + "hhuhuhuhu");
     if (error) res.send(error.details[0].message);
     else {
       const salt = await bcrypt.genSalt(10);
@@ -114,25 +105,19 @@ const addUser = async (req, res) => {
         create_date: time,
         update_date: time,
       });
-      console.log(user);
       res.send("user created").status(200);
     }
   } catch (err) {
     res.send("errror" + err).status(400);
   }
 };
+//get user by the primary key
 const getUserById = async (req, res) => {
-  console.log(req.params.id);
   try {
-    console.log("keriyo?");
-    console.log(req.params.id);
     const user = await User.findByPk(req.params.id);
-    console.log(user);
-    console.log(user);
     if (user == null) {
       res.status(404).send("Not Found");
     } else if (user.status == 0) {
-      console.log("huu");
       res.status(404).send("Not Found");
     } else {
       return new UserView(user);
@@ -141,7 +126,7 @@ const getUserById = async (req, res) => {
     res.send("error" + err);
   }
 };
-
+//delete the user by change status to not alive and add del to orginal mail so that make unquie mail feature for stable
 const deleteUserById = async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id);
@@ -149,7 +134,6 @@ const deleteUserById = async (req, res) => {
     if (user == null) {
       res.status(404).send("Not Found");
     } else if (user.status == 0) {
-      console.log("huu");
       res.status(404).send("Not Found");
     } else {
       let username = user.user_name;
@@ -160,8 +144,8 @@ const deleteUserById = async (req, res) => {
     res.send("error" + err).status(500);
   }
 };
+//change password by find by token and went through validation and change encypt the passwrd
 const changePasswordService = async (req, res) => {
-  console.log(req.user.id + "service");
   let user = await User.findByPk(req.user.id);
   if (user == null) {
     res.status(404).send("Not Found");
@@ -169,7 +153,6 @@ const changePasswordService = async (req, res) => {
     console.log("huu");
     res.status(404).send("Not Found");
   } else {
-    console.log(req.body);
     const { error } = validateChangePassword(req.body);
     if (error) res.send(error.details[0].message);
     else {
@@ -179,7 +162,6 @@ const changePasswordService = async (req, res) => {
         req.body.old_password,
         user.password
       );
-      console.log(!oldPassword + "asdfghjkl");
       if (!oldPassword) {
         res.send("password doesnt match with old password").status(400);
       } else {
@@ -187,6 +169,55 @@ const changePasswordService = async (req, res) => {
         res.send("password is updated").status(200);
       }
     }
+  }
+};
+//get all users through the pager class which has sorting,pagination and search are included
+
+const getAllUsers = async (req, res) => {
+  try {
+    const result = await pager(
+      User,
+      req.query.page || 1,
+      req.query.limit || 3,
+      req.query.searchCol || "user_name",
+      req.query.searchKey,
+      req.query.sortCol || "user_id",
+      req.query.sortMeth
+    );
+    res.send(result);
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+//get accessToken using refresh token
+const getAccessTokenService = async (req, res) => {
+  try {
+    const refreshToken = req.body.refreshToken;
+    if (!refreshToken) {
+      return res.status(403).send("refresh token is required");
+    }
+    const decodedRefreshToken = jwt.decode(refreshToken, process.env.TOKEN_KEY);
+    console.log(decodedRefreshToken);
+    if (
+      decodedRefreshToken.purpose === "REFRESH_TOKEN" &&
+      jwt.verify(refreshToken, process.env.TOKEN_KEY)
+    ) {
+      const user = await User.findByPk(decodedRefreshToken.id);
+      const accessToken = jwt.sign(
+        {
+          user_id: user.user_id,
+          role: user.user_type,
+          purpose: "ACCESS_TOKEN",
+        },
+        process.env.TOKEN_KEY,
+        { expiresIn: "8h" }
+      );
+     return new LoginView(user,accessToken,refreshToken)
+    } else {
+      res.status(401).send("Invalid token");
+    }
+  } catch (error) {
+    res.send("Error" + error);
   }
 };
 
@@ -197,4 +228,6 @@ module.exports = {
   getUserById,
   deleteUserById,
   changePasswordService,
+  getAllUsers,
+  getAccessTokenService,
 };

@@ -11,7 +11,7 @@ app.use(cors());
 app.get("/welcome", auth.verifyToken,auth.adminAccess, (req, res) => {
   res.status(200).send("Welcome 🙌 ");
 })
-const loginRouter = require("./router/UserRouter");
+const loginRouter = require("./router/LoginRouter");
 app.use("/login", loginRouter);
 //admin route
 const adminRouter = require("./router/AdminRouter");

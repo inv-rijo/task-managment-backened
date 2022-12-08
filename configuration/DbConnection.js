@@ -10,7 +10,7 @@ const sequelize = new Sequelize(
     dialect: dbConfig.dialect,
   }
 );
-
+//check db connection
 try{
     if(sequelize.authenticate){
         console.log('Db Connected');
