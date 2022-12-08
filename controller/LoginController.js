@@ -3,7 +3,7 @@ const { login,getAccessTokenService } = require("../service/UserService");
 
 // Login
 
-const userLogin = async (req, res) => {
+const UserLoginController = async (req, res) => {
   try {
     let loginService = await login(req, res);
     res.send(loginService);
@@ -19,4 +19,4 @@ const getAccessToken= async(req,res)=>{
     console.log(error);
   }
 }
-module.exports = {userLogin,getAccessToken};
+module.exports = {UserLoginController,getAccessToken};

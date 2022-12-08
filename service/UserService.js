@@ -36,7 +36,7 @@ const login = async (req, res) => {
             role: userWithEmail.user_type,
             purpose: "ACCESS_TOKEN",
           },
-          process.env.TOKEN_KEY,
+          process.env.ACCESS_TOKEN_KEY,
           { expiresIn: "2h" }
         );
         const refreshToken = jwt.sign(
@@ -209,7 +209,7 @@ const getAccessTokenService = async (req, res) => {
           role: user.user_type,
           purpose: "ACCESS_TOKEN",
         },
-        process.env.TOKEN_KEY,
+        process.env.ACCESS_TOKEN_KEY,
         { expiresIn: "8h" }
       );
      return new LoginView(user,accessToken,refreshToken)
