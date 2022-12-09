@@ -27,6 +27,38 @@ const adminAccess = (req, res, next) => {
     }
   });
 };
+//managerAccess to the auth
+const managerAccess = (req, res, next) => {
+  verifyToken(req, res, () => {
+    if (req.user.role == 1) {
+      next();
+    } else {
+      res.status(403).json("You are not allowed to perform this task");
+    }
+  });
+};
+
+//employeeAccess to the auth
+const employeeAccess = (req, res, next) => {
+  verifyToken(req, res, () => {
+    if (req.user.role == 2) {
+      next();
+    } else {
+      res.status(403).json("You are not allowed to perform this task");
+    }
+  });
+};
+
+//clientAccess to the auth
+const clientAccess = (req, res, next) => {
+  verifyToken(req, res, () => {
+    if (req.user.role == 3) {
+      next();
+    } else {
+      res.status(403).json("You are not allowed to perform this task");
+    }
+  });
+};
 
 
-module.exports = { verifyToken, adminAccess, currentUser };
+module.exports = { verifyToken, adminAccess,managerAccess,employeeAccess,clientAccess  };
