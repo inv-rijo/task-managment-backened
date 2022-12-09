@@ -15,6 +15,7 @@ const loginRouter = require("./router/LoginRouter");
 app.use("/login", loginRouter);
 //admin route
 const adminRouter = require("./router/AdminRouter");
+const { Project } = require("./model/Project");
 app.use("/admin", adminRouter);
 
 // listening to backend port

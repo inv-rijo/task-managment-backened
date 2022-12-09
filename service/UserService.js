@@ -45,7 +45,7 @@ const login = async (req, res) => {
             role: userWithEmail.user_type,
             purpose: "REFRESH_TOKEN",
           },
-          process.env.TOKEN_KEY,
+          process.env.REFRESH_TOKEN_KEY,
           { expiresIn: "1d" }
         );
 
@@ -91,10 +91,10 @@ const addUser = async (req, res) => {
     if (error) res.send(error.details[0].message);
     else {
       const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(
-        process.env.PASSWORD_PREDEFINED,
-        salt
-      );
+      let name = body.user_name;
+      let SimplePassword =
+        name.charAt(0).toUpperCase() + name.slice(1) + "@1234";
+      const hashedPassword = await bcrypt.hash(SimplePassword, salt);
       console.log(hashedPassword);
       let user = await User.create({
         user_name: body.user_name,
@@ -200,7 +200,7 @@ const getAccessTokenService = async (req, res) => {
     console.log(decodedRefreshToken);
     if (
       decodedRefreshToken.purpose === "REFRESH_TOKEN" &&
-      jwt.verify(refreshToken, process.env.TOKEN_KEY)
+      jwt.verify(refreshToken, process.env.REFRESH_TOKEN_KEY)
     ) {
       const user = await User.findByPk(decodedRefreshToken.id);
       const accessToken = jwt.sign(

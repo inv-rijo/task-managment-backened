@@ -1,7 +1,6 @@
 const { Sequelize } = require("sequelize");
 const sequelize = require("../configuration/DbConnection");
 const Joi = require("joi");
-const { adminAccess } = require("../Middleware/Auth");
 let regrex = new RegExp(
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/
 );
@@ -28,6 +27,10 @@ const User = sequelize.define(
     password: {
       type: Sequelize.STRING,
       allowNull: false,
+    },
+    designation: {
+      type: Sequelize.STRING,
+      allowNull: true,
     },
     department_id: {
       type: Sequelize.INTEGER,
