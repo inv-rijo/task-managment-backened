@@ -25,20 +25,19 @@ const pager = async (
   } else {
     console.log(searchCol);
     listData = await model.findAndCountAll({
-      
       offset: startIndex,
       limit: limit,
       order: [[sortCol, sortMethod]],
-      where: { 
-        [searchCol]:{
+      where: {
+        [searchCol]: {
           [Op.like]: "%" + keyWord + "%",
         },
       },
     });
   }
-  if(endIndex< listData.count){
+  if (endIndex < listData.count) {
     listData.hasNextPage = true;
-  }else{
+  } else {
     listData.hasNextPage = false;
   }
   return listData;

@@ -20,18 +20,13 @@ const verifyToken = (req, res, next) => {
 //adminaccess to the auth
 const adminAccess = (req, res, next) => {
   verifyToken(req, res, () => {
-    if (req.user.role == "admin") {
+    if (req.user.role == 0) {
       next();
     } else {
       res.status(403).json("You are not allowed to perform this task");
     }
   });
 };
-//get the current user
-const currentUser = (req, res, next) => {
-  verifyToken(req, res, () => {
-    req.current_user = req.user.id;
-  });
-};
+
 
 module.exports = { verifyToken, adminAccess, currentUser };

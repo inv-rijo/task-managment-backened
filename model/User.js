@@ -1,8 +1,10 @@
 const { Sequelize } = require("sequelize");
 const sequelize = require("../configuration/DbConnection");
-const Joi = require('joi');
+const Joi = require("joi");
 const { adminAccess } = require("../Middleware/Auth");
-let regrex = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/);
+let regrex = new RegExp(
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/
+);
 const User = sequelize.define(
   "user",
   {
@@ -19,9 +21,9 @@ const User = sequelize.define(
       type: Sequelize.STRING,
       unique: true,
       allowNull: false,
-      validate:{
-        isEmail:true
-      }
+      validate: {
+        isEmail: true,
+      },
     },
     password: {
       type: Sequelize.STRING,
@@ -34,8 +36,7 @@ const User = sequelize.define(
       type: Sequelize.STRING,
     },
     user_type: {
-      type: Sequelize.ENUM,
-      values:['admin','manager','client','developer'],
+      type: Sequelize.TINYINT,
       allowNull: false,
     },
     status: {
@@ -46,8 +47,8 @@ const User = sequelize.define(
   {
     freezeTableName: true,
     timestamps: true,
-    createdAt:"created_date",
-    updatedAt:"updated_date"
+    createdAt: "created_date",
+    updatedAt: "updated_date",
   }
 );
 function validateUser(user) {
@@ -55,7 +56,7 @@ function validateUser(user) {
     user_name: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(8).max(18).pattern(regrex),
-    user_type:Joi.required()
+    user_type: Joi.required(),
   });
   return schema.validate(user);
 }
@@ -75,4 +76,4 @@ function validateChangePassword(user) {
   return schema.validate(user);
 }
 
-module.exports = {User,validate,validateUser,validateChangePassword};
+module.exports = { User, validate, validateUser, validateChangePassword };

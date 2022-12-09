@@ -11,14 +11,12 @@ const sequelize = new Sequelize(
   }
 );
 //check db connection
-try{
-    if(sequelize.authenticate){
-        console.log('Db Connected');
-    }else{
-        console.log('Db Connection failed');
-    }
-}catch(err){
-
-}
+try {
+  if (sequelize.authenticate) {
+    console.log("Db Connected");
+  } else {
+    console.log("Db Connection failed");
+  }
+} catch (err) {}
 
 module.exports = sequelize;

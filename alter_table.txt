@@ -1,0 +1,7 @@
+// User.sync({force:true})
+//   .then(() => {
+//     console.log("Success");
+//   })
+//   .catch((err) => {
+//     console.log("errr" + err);
+//   });

@@ -212,7 +212,7 @@ const getAccessTokenService = async (req, res) => {
         process.env.ACCESS_TOKEN_KEY,
         { expiresIn: "8h" }
       );
-     return new LoginView(user,accessToken,refreshToken)
+      return new LoginView(user, accessToken, refreshToken);
     } else {
       res.status(401).send("Invalid token");
     }

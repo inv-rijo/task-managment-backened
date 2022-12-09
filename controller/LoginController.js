@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { login,getAccessTokenService } = require("../service/UserService");
+const { login, getAccessTokenService } = require("../service/UserService");
 
 // Login
 
@@ -11,12 +11,12 @@ const UserLoginController = async (req, res) => {
     res.json(err);
   }
 };
-const getAccessToken= async(req,res)=>{
+const getAccessToken = async (req, res) => {
   try {
-    let newAccessToken = await getAccessTokenService(req,res)
+    let newAccessToken = await getAccessTokenService(req, res);
     res.status(200).send(newAccessToken);
   } catch (error) {
     console.log(error);
   }
-}
-module.exports = {UserLoginController,getAccessToken};
+};
+module.exports = { UserLoginController, getAccessToken };
